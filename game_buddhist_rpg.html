@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚔️ ผจญภัยในดินแดนพุทธธรรม</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700;900&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:#0a0015;color:#fff;min-height:100vh;overflow-x:hidden;user-select:none;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:20px;animation:fadeIn .45s ease;}
+.screen.active{display:flex;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes comboPop{0%{transform:scale(0) rotate(-12deg)}60%{transform:scale(1.25) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes fall{from{transform:translateY(-40px) rotate(0);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes twinkle{0%,100%{opacity:.9}50%{opacity:.2}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(255,215,0,.3)}50%{box-shadow:0 0 40px rgba(255,215,0,.7)}}
+
+/* ── STARRY BG ── */
+.star-bg{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,#1a0535 0%,#090010 100%);z-index:-2;}
+.star-bg::before,.star-bg::after{content:'';position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite;}
+.star-bg::before{width:2px;height:2px;box-shadow:80px 120px #fff,240px 60px #fff,420px 180px #fff,600px 80px #fff,750px 250px #fff,120px 350px #fff,380px 420px #fff,560px 320px #fff,700px 500px #fff,200px 480px #fff,50px 550px #fff,900px 150px #fff,450px 600px #fff,300px 700px #fff,650px 700px #fff,820px 600px #fff,180px 200px #fff,480px 90px #fff,860px 400px #fff,320px 520px #fff;}
+.star-bg::after{width:1px;height:1px;animation-delay:1.5s;box-shadow:150px 80px rgba(255,255,255,.6),350px 200px rgba(255,255,255,.6),520px 450px rgba(255,255,255,.6),680px 130px rgba(255,255,255,.6),90px 620px rgba(255,255,255,.6),410px 300px rgba(255,255,255,.6),770px 370px rgba(255,255,255,.6),240px 560px rgba(255,255,255,.6),590px 580px rgba(255,255,255,.6),850px 230px rgba(255,255,255,.6);}
+
+/* ── BUTTONS ── */
+.btn-main{background:linear-gradient(135deg,#FFD700,#FF8C00);border:3px solid #000;border-radius:14px;padding:14px 36px;font-family:'Kanit',sans-serif;font-weight:900;font-size:18px;color:#000;cursor:pointer;box-shadow:0 4px 24px rgba(255,215,0,.45);transition:all .2s;}
+.btn-main:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(255,215,0,.7);}
+.btn-main:active{transform:scale(.97);}
+.btn-ghost{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.25);border-radius:10px;padding:9px 22px;font-family:'Kanit',sans-serif;font-weight:700;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;margin:4px;}
+.btn-ghost:hover{border-color:#FFD700;color:#FFD700;transform:translateY(-1px);}
+
+/* ─────────────────────────────── */
+/* WELCOME SCREEN */
+/* ─────────────────────────────── */
+.game-logo{font-size:clamp(10px,10vw,70px);animation:float 3s ease-in-out infinite;margin-bottom:6px;}
+.game-title{font-family:'Kanit',sans-serif;font-weight:900;font-size:clamp(24px,5.5vw,44px);text-align:center;background:linear-gradient(135deg,#FFD700,#FF8C00,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:pulse 2s infinite;}
+.game-subject{color:#aaa;font-size:14px;text-align:center;margin-bottom:28px;}
+
+.avatar-label{font-size:13px;color:#bbb;text-align:center;margin-bottom:10px;}
+.avatar-grid{display:flex;gap:10px;justify-content:center;margin-bottom:22px;}
+.av{width:58px;height:58px;background:rgba(255,255,255,.08);border:3px solid rgba(255,255,255,.2);border-radius:50%;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.av:hover,.av.sel{border-color:#FFD700;background:rgba(255,215,0,.18);transform:scale(1.12);}
+
+.name-inp{background:rgba(255,255,255,.09);border:3px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 18px;font-size:16px;font-family:'Sarabun',sans-serif;color:#fff;text-align:center;width:280px;max-width:92vw;margin-bottom:18px;outline:none;transition:border-color .2s;}
+.name-inp:focus{border-color:#FFD700;}
+.name-inp::placeholder{color:rgba(255,255,255,.35);}
+.game-info-bar{margin-top:14px;font-size:12px;color:#555;text-align:center;}
+
+/* ─────────────────────────────── */
+/* HUD (shared top bar) */
+/* ─────────────────────────────── */
+.hud{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:30px;padding:7px 18px;margin-bottom:14px;flex-wrap:wrap;justify-content:center;}
+.hud-hearts{font-size:18px;letter-spacing:2px;}
+.hud-score{font-family:'Kanit',sans-serif;font-weight:700;font-size:16px;color:#FFD700;}
+.hud-name{font-size:13px;color:#ccc;}
+
+/* ─────────────────────────────── */
+/* MAP SCREEN */
+/* ─────────────────────────────── */
+.map-title{font-family:'Kanit',sans-serif;font-weight:900;font-size:clamp(20px,4vw,30px);color:#FFD700;margin-bottom:4px;}
+.map-sub{font-size:13px;color:#777;margin-bottom:22px;}
+.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:480px;width:100%;margin-bottom:18px;}
+.stage-card{background:rgba(255,255,255,.05);border:3px solid rgba(255,255,255,.15);border-radius:16px;padding:18px 14px;text-align:center;transition:all .3s;position:relative;overflow:hidden;}
+.stage-card.avail{cursor:pointer;animation:glowPulse 2s infinite;}
+.stage-card.avail:hover{transform:translateY(-5px);}
+.stage-card.done{border-color:#00C853;opacity:.8;}
+.stage-card.locked{opacity:.35;cursor:not-allowed;}
+.sc-icon{font-size:38px;display:block;margin-bottom:8px;animation:float 3s ease-in-out infinite;}
+.sc-name{font-family:'Kanit',sans-serif;font-weight:700;font-size:14px;margin-bottom:3px;}
+.sc-status{font-size:11px;}
+.lock-mask{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;}
+
+/* ─────────────────────────────── */
+/* STAGE INTRO */
+/* ─────────────────────────────── */
+.intro-icon{font-size:72px;animation:float 2s ease-in-out infinite;margin-bottom:14px;}
+.intro-name{font-family:'Kanit',sans-serif;font-weight:900;font-size:clamp(22px,5vw,36px);text-align:center;margin-bottom:8px;}
+.intro-desc{color:#ccc;font-size:15px;text-align:center;max-width:400px;line-height:1.7;margin-bottom:18px;}
+.guardian-card{background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.18);border-radius:12px;padding:12px 20px;text-align:center;margin-bottom:22px;font-size:14px;color:#ccc;}
+.guardian-card strong{color:#FFD700;}
+
+/* ─────────────────────────────── */
+/* QUESTION SCREEN */
+/* ─────────────────────────────── */
+#screen-question{justify-content:flex-start;padding-top:18px;}
+.q-top{width:100%;max-width:640px;display:flex;justify-content:space-between;align-items:center;padding:0 2px;margin-bottom:10px;}
+.q-sname{font-family:'Kanit',sans-serif;font-weight:700;font-size:13px;color:#ccc;}
+.q-hearts-s{font-size:17px;}
+.q-score-s{font-family:'Kanit',sans-serif;font-weight:700;color:#FFD700;font-size:15px;}
+
+.prog-bar{width:100%;max-width:640px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;margin-bottom:10px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#FFD700,#FF8C00);border-radius:3px;transition:width .5s ease;}
+
+.timer-bar{width:100%;max-width:640px;height:9px;background:rgba(255,255,255,.1);border-radius:5px;margin-bottom:18px;overflow:hidden;}
+.timer-fill{height:100%;border-radius:5px;transition:width 1s linear,background .5s;background:#00C853;}
+.timer-fill.warn{background:#FF6D00;}
+.timer-fill.danger{background:#FF1744;}
+
+.q-card{width:100%;max-width:640px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.14);border-radius:20px;padding:22px 20px;margin-bottom:14px;}
+.q-num-label{font-size:12px;color:#aaa;margin-bottom:7px;font-weight:600;}
+.q-text{font-size:clamp(15px,3vw,20px);font-weight:700;line-height:1.55;color:#fff;}
+
+.choices{width:100%;max-width:640px;display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+@media(max-width:460px){.choices{grid-template-columns:1fr;}}
+.choice{background:rgba(255,255,255,.07);border:2.5px solid rgba(255,255,255,.18);border-radius:12px;padding:13px 14px;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;color:#fff;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;line-height:1.4;transition:all .2s;}
+.choice:hover:not(:disabled){border-color:#FFD700;background:rgba(255,215,0,.1);transform:translateY(-2px);}
+.choice.correct{border-color:#00C853!important;background:rgba(0,200,83,.22)!important;}
+.choice.wrong{border-color:#FF1744!important;background:rgba(255,23,68,.22)!important;animation:shake .3s ease;}
+.choice:disabled{cursor:not-allowed;}
+.c-letter{width:27px;height:27px;border-radius:50%;border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;flex-shrink:0;background:rgba(255,255,255,.09);}
+
+/* ─────────────────────────────── */
+/* FEEDBACK OVERLAY */
+/* ─────────────────────────────── */
+.fb-overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(4px);}
+.fb-overlay.show{opacity:1;pointer-events:all;}
+.fb-overlay.fb-ok{background:rgba(0,200,83,.18);}
+.fb-overlay.fb-bad{background:rgba(255,23,68,.18);}
+.fb-icon{font-size:76px;animation:pulse .4s ease;}
+.fb-title{font-family:'Kanit',sans-serif;font-weight:900;font-size:clamp(24px,5vw,36px);margin-top:10px;text-align:center;}
+.fb-detail{font-size:14px;color:#ddd;margin-top:8px;text-align:center;max-width:320px;line-height:1.6;}
+.fb-pts{font-family:'Kanit',sans-serif;font-weight:900;font-size:34px;color:#FFD700;margin-top:8px;}
+
+/* ─────────────────────────────── */
+/* STAGE COMPLETE */
+/* ─────────────────────────────── */
+.done-icon{font-size:70px;animation:float 2s infinite;margin-bottom:12px;}
+.done-title{font-family:'Kanit',sans-serif;font-weight:900;font-size:clamp(24px,5vw,36px);color:#FFD700;text-align:center;margin-bottom:6px;}
+.done-stars{font-size:36px;letter-spacing:6px;margin-bottom:18px;}
+.stats-row{display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap;justify-content:center;}
+.stat{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 18px;text-align:center;min-width:90px;}
+.stat-n{font-family:'Kanit',sans-serif;font-weight:900;font-size:28px;color:#FFD700;}
+.stat-l{font-size:11px;color:#999;margin-top:2px;}
+
+/* ─────────────────────────────── */
+/* GAME OVER */
+/* ─────────────────────────────── */
+.go-icon{font-size:72px;margin-bottom:12px;}
+.go-title{font-family:'Kanit',sans-serif;font-weight:900;font-size:clamp(28px,6vw,48px);color:#FF1744;text-align:center;}
+
+/* ─────────────────────────────── */
+/* VICTORY */
+/* ─────────────────────────────── */
+.vic-title{font-family:'Kanit',sans-serif;font-weight:900;font-size:clamp(26px,5.5vw,44px);background:linear-gradient(135deg,#FFD700,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;animation:pulse 1.5s infinite;}
+.rank-ring{width:96px;height:96px;border-radius:50%;border:4px solid #000;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:14px auto;box-shadow:0 0 44px rgba(255,215,0,.6);}
+.rank-ltr{font-family:'Kanit',sans-serif;font-weight:900;font-size:46px;color:#000;line-height:1;}
+.rank-lbl{font-size:10px;font-weight:700;color:#333;}
+.vic-score{font-family:'Kanit',sans-serif;font-weight:900;font-size:clamp(42px,8vw,66px);color:#FFD700;text-align:center;text-shadow:0 0 28px rgba(255,215,0,.55);}
+.vic-msg{background:rgba(255,215,0,.09);border:2px solid rgba(255,215,0,.25);border-radius:12px;padding:14px 20px;text-align:center;max-width:360px;font-size:14px;color:#ddd;line-height:1.7;margin-bottom:18px;}
+
+/* ─────────────────────────────── */
+/* COMBO BADGE */
+/* ─────────────────────────────── */
+.combo-badge{position:fixed;top:70px;right:18px;background:linear-gradient(135deg,#FF6D00,#FF1744);border:3px solid #000;border-radius:10px;padding:7px 16px;font-family:'Kanit',sans-serif;font-weight:900;font-size:19px;color:#fff;box-shadow:0 4px 22px rgba(255,100,0,.55);z-index:50;animation:comboPop .45s ease forwards;pointer-events:none;}
+
+/* ─────────────────────────────── */
+/* PARTICLES */
+/* ─────────────────────────────── */
+.particle{position:fixed;pointer-events:none;animation:fall linear forwards;z-index:200;font-size:20px;}
+
+/* ─────────────────────────────── */
+/* RESPONSIVE */
+/* ─────────────────────────────── */
+@media(max-width:400px){.map-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="star-bg"></div>
+
+<!-- ═══ WELCOME ═══ -->
+<div class="screen active" id="screen-welcome">
+  <div class="game-logo">🛕</div>
+  <div class="game-title">⚔️ ผจญภัยในดินแดนพุทธธรรม</div>
+  <div class="game-subject">สังคมศึกษา ม.3 · วันสำคัญในพระพุทธศาสนา</div>
+
+  <div class="avatar-label">🎭 เลือกตัวละครของคุณ</div>
+  <div class="avatar-grid" id="av-grid">
+    <div class="av sel" data-av="🧑‍🎓" onclick="selAv(this)">🧑‍🎓</div>
+    <div class="av" data-av="👧" onclick="selAv(this)">👧</div>
+    <div class="av" data-av="🧑" onclick="selAv(this)">🧑</div>
+    <div class="av" data-av="🧙" onclick="selAv(this)">🧙</div>
+    <div class="av" data-av="⚔️" onclick="selAv(this)">⚔️</div>
+  </div>
+
+  <input class="name-inp" id="name-inp" type="text" placeholder="พิมพ์ชื่อของคุณที่นี่..." maxlength="20">
+  <button class="btn-main" onclick="startGame()">🚀 เริ่มผจญภัย!</button>
+  <div class="game-info-bar">4 ด่าน · 12 คำถาม · Timer 15 วิ · ชิง 1,500+ แต้ม</div>
+</div>
+
+<!-- ═══ MAP ═══ -->
+<div class="screen" id="screen-map">
+  <div class="hud">
+    <div class="hud-hearts" id="m-hearts">❤️❤️❤️</div>
+    <div class="hud-name" id="m-name">ผู้เล่น</div>
+    <div class="hud-score" id="m-score">⭐ 0</div>
+  </div>
+  <div class="map-title">🗺️ แผนที่ผจญภัย</div>
+  <div class="map-sub">เลือกด่านที่ปลดล็อกแล้วเพื่อเข้าต่อสู้</div>
+  <div class="map-grid" id="map-grid"></div>
+  <div style="font-size:12px;color:#444;text-align:center;">ต้องผ่านด่านตามลำดับ · ❤️ หมด = เกมโอเวอร์</div>
+</div>
+
+<!-- ═══ STAGE INTRO ═══ -->
+<div class="screen" id="screen-intro">
+  <div class="intro-icon" id="i-icon">🪷</div>
+  <div class="intro-name" id="i-name">ชื่อด่าน</div>
+  <div class="intro-desc" id="i-desc">คำอธิบาย</div>
+  <div class="guardian-card">
+    <strong>⚔️ ผู้พิทักษ์:</strong> <span id="i-guard">–</span><br>
+    <span style="font-size:12px">ตอบ <strong id="i-qn">3</strong> คำถามให้ถูกเพื่อผ่านด่านนี้</span>
+  </div>
+  <button class="btn-main" id="btn-fight" onclick="beginStage()">⚔️ เข้าสู่การต่อสู้!</button>
+  <button class="btn-ghost" onclick="showMap()" style="margin-top:8px">← กลับแผนที่</button>
+</div>
+
+<!-- ═══ QUESTION ═══ -->
+<div class="screen" id="screen-question">
+  <div class="q-top">
+    <div class="q-sname" id="q-sname">ด่าน</div>
+    <div class="q-hearts-s" id="q-hearts">❤️❤️❤️</div>
+    <div class="q-score-s" id="q-score">⭐ 0</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+  <div class="q-card">
+    <div class="q-num-label" id="q-num">คำถามที่ 1 / 3</div>
+    <div class="q-text" id="q-text"></div>
+  </div>
+  <div class="choices" id="choices"></div>
+</div>
+
+<!-- ═══ FEEDBACK OVERLAY ═══ -->
+<div class="fb-overlay" id="fb-overlay">
+  <div class="fb-icon" id="fb-icon">✅</div>
+  <div class="fb-title" id="fb-title">ถูกต้อง!</div>
+  <div class="fb-detail" id="fb-detail"></div>
+  <div class="fb-pts" id="fb-pts"></div>
+</div>
+
+<!-- ═══ STAGE COMPLETE ═══ -->
+<div class="screen" id="screen-done">
+  <div class="done-icon" id="done-icon">🌟</div>
+  <div class="done-title">✅ ผ่านด่านแล้ว!</div>
+  <div class="done-stars" id="done-stars">⭐⭐⭐</div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="ds-correct">0/0</div><div class="stat-l">ตอบถูก</div></div>
+    <div class="stat"><div class="stat-n" id="ds-gained">+0</div><div class="stat-l">แต้มที่ได้</div></div>
+    <div class="stat"><div class="stat-n" id="ds-total">0</div><div class="stat-l">แต้มรวม</div></div>
+  </div>
+  <button class="btn-main" id="btn-next" onclick="goNext()">ด่านถัดไป →</button>
+  <button class="btn-ghost" onclick="showMap()" style="margin-top:8px">กลับแผนที่</button>
+</div>
+
+<!-- ═══ GAME OVER ═══ -->
+<div class="screen" id="screen-over">
+  <div class="go-icon">💀</div>
+  <div class="go-title">GAME OVER!</div>
+  <div style="color:#ccc;margin:8px 0 4px;font-size:15px;text-align:center">หมดพลังชีวิตแล้ว...</div>
+  <div style="font-size:13px;color:#666;margin-bottom:22px;text-align:center">ทบทวนเนื้อหาแล้วลองใหม่ได้เลย!</div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="go-score">0</div><div class="stat-l">แต้มที่ได้</div></div>
+    <div class="stat"><div class="stat-n" id="go-stage">1</div><div class="stat-l">ด่านที่ถึง</div></div>
+  </div>
+  <button class="btn-main" onclick="restartGame()">🔄 เล่นใหม่!</button>
+</div>
+
+<!-- ═══ VICTORY ═══ -->
+<div class="screen" id="screen-victory">
+  <div style="font-size:58px;animation:float 2s infinite;margin-bottom:10px">🏆</div>
+  <div class="vic-title">🎉 ผจญภัยสำเร็จ! 🎉</div>
+  <div style="color:#bbb;font-size:14px;text-align:center;margin-bottom:4px" id="v-player"></div>
+  <div class="rank-ring" id="rank-ring">
+    <div class="rank-ltr" id="rank-ltr">A</div>
+    <div class="rank-lbl">RANK</div>
+  </div>
+  <div class="vic-score" id="v-score">0</div>
+  <div style="font-size:12px;color:#777;text-align:center;margin-bottom:14px">คะแนนรวมทั้งหมด</div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="v-correct">0</div><div class="stat-l">ตอบถูก</div></div>
+    <div class="stat"><div class="stat-n" id="v-hp">❤️❤️❤️</div><div class="stat-l">ชีวิตเหลือ</div></div>
+    <div class="stat"><div class="stat-n" id="v-combo">0x</div><div class="stat-l">Combo สูงสุด</div></div>
+  </div>
+  <div class="vic-msg" id="v-msg"></div>
+  <button class="btn-main" onclick="restartGame()">🔄 เล่นอีกครั้ง</button>
+</div>
+
+<script>
+// ════════════════════════════════════
+//  GAME DATA
+// ════════════════════════════════════
+const STAGES=[
+  {
+    id:1,shortName:'วิสาขบูชา',name:'🌸 วิหารวิสาขบูชา',icon:'🪷',
+    color:'#FFD700',
+    guardian:'เทพดอกบัวทอง',
+    desc:'วัดแห่งนี้คือที่ประดิษฐานความรู้เรื่องวันวิสาขบูชา\nวันสำคัญที่สุดในพระพุทธศาสนาสากล',
+    qs:[
+      {
+        q:'วันวิสาขบูชาตรงกับวันขึ้น 15 ค่ำ เดือนใดในปฏิทินจันทรคติ?',
+        c:['เดือน 3','เดือน 6','เดือน 8','เดือน 9'],
+        a:1,tip:'วันวิสาขบูชาตรงกับวันเพ็ญขึ้น 15 ค่ำ เดือน 6'
+      },
+      {
+        q:'วันวิสาขบูชาระลึกถึงเหตุการณ์สำคัญ 3 ประการของพระพุทธเจ้า คือ?',
+        c:['ตรัสรู้ บวช สอน','ประสูติ ตรัสรู้ ปรินิพพาน','เทศนา บวช นิพพาน','ประสูติ สอนธรรม ออกผนวช'],
+        a:1,tip:'วิสาขบูชาระลึกถึง ประสูติ ตรัสรู้ และปรินิพพาน ของพระพุทธเจ้า'
+      },
+      {
+        q:'พระพุทธเจ้าทรงตรัสรู้อนุตตรสัมมาสัมโพธิญาณ (การตรัสรู้สูงสุด) ที่ใด?',
+        c:['ป่าอิสิปตนมฤคทายวัน','วัดเวฬุวัน เมืองราชคฤห์','ต้นโพธิ์ เมืองพุทธคยา (คยา)','ลุมพินีวัน เมืองกบิลพัสดุ์'],
+        a:2,tip:'พระพุทธเจ้าทรงตรัสรู้ใต้ต้นโพธิ์ที่เมืองพุทธคยา (เดิมเรียกว่าคยา) ในอินเดีย'
+      }
+    ]
+  },
+  {
+    id:2,shortName:'มาฆบูชา',name:'🌕 ลานมาฆบูชา',icon:'🌕',
+    color:'#C8B4FF',
+    guardian:'เทพจันทราเงิน',
+    desc:'ลานกว้างใต้แสงพระจันทร์เต็มดวง\nสถานที่มหาสังฆสันนิบาตครั้งยิ่งใหญ่',
+    qs:[
+      {
+        q:'วันมาฆบูชาตรงกับวันเพ็ญขึ้น 15 ค่ำ เดือนใด?',
+        c:['เดือน 2','เดือน 3','เดือน 6','เดือน 8'],
+        a:1,tip:'วันมาฆบูชาตรงกับวันเพ็ญขึ้น 15 ค่ำ เดือน 3'
+      },
+      {
+        q:'ในวันมาฆบูชา พระสงฆ์มาประชุมโดยมิได้นัดหมายกี่รูป?',
+        c:['500 รูป','1,000 รูป','1,250 รูป','1,500 รูป'],
+        a:2,tip:'พระสงฆ์ 1,250 รูปมาประชุมโดยปาฏิหาริย์ที่วัดเวฬุวัน เมืองราชคฤห์'
+      },
+      {
+        q:'"โอวาทปาติโมกข์" ที่พระพุทธเจ้าทรงแสดงในวันมาฆบูชา สรุปหลักธรรมสำคัญว่าอย่างไร?',
+        c:['ทำดี ละเว้นชั่ว ทำจิตให้บริสุทธิ์','บวช ทำบุญ ฟังธรรม','รักษาศีล นั่งสมาธิ สวดมนต์','ให้ทาน รักษาศีล เจริญภาวนา'],
+        a:0,tip:'โอวาทปาติโมกข์ = ละชั่ว ทำดี ทำจิตให้ผ่องใสบริสุทธิ์'
+      }
+    ]
+  },
+  {
+    id:3,shortName:'อาสาฬหบูชา',name:'⚡ แม่น้ำอาสาฬห์',icon:'⛵',
+    color:'#00E5FF',
+    guardian:'เจ้าแห่งสายน้ำ',
+    desc:'แม่น้ำแห่งปัญญาที่ไหลผ่านมาตั้งแต่\nพระพุทธเจ้าทรงแสดงปฐมเทศนาครั้งแรก',
+    qs:[
+      {
+        q:'วันอาสาฬหบูชาตรงกับวันใด?',
+        c:['ขึ้น 15 ค่ำ เดือน 6','แรม 1 ค่ำ เดือน 8','ขึ้น 15 ค่ำ เดือน 8','ขึ้น 15 ค่ำ เดือน 3'],
+        a:2,tip:'วันอาสาฬหบูชาตรงกับวันขึ้น 15 ค่ำ เดือน 8'
+      },
+      {
+        q:'พระพุทธเจ้าทรงแสดงปฐมเทศนา "ธัมมจักกัปปวัตนสูตร" ครั้งแรก ณ ที่ใด?',
+        c:['วัดเวฬุวัน เมืองราชคฤห์','ป่าอิสิปตนมฤคทายวัน เมืองพาราณสี','ต้นโพธิ์ เมืองพุทธคยา','ลุมพินีวัน เมืองกบิลพัสดุ์'],
+        a:1,tip:'ทรงแสดงปฐมเทศนาที่ป่าอิสิปตนมฤคทายวัน เมืองพาราณสี แก่ปัญจวัคคีย์ 5 รูป'
+      },
+      {
+        q:'วันเข้าพรรษาตรงกับวันใด ซึ่งตามหลังวันอาสาฬหบูชา?',
+        c:['วันแรม 1 ค่ำ เดือน 8 (วันถัดไป)','7 วันหลังจากนั้น','วันเดียวกัน','15 วันหลังจากนั้น'],
+        a:0,tip:'วันเข้าพรรษาคือวันแรม 1 ค่ำ เดือน 8 ตามหลังวันอาสาฬหบูชา 1 วัน'
+      }
+    ]
+  },
+  {
+    id:4,shortName:'วันพรรษา',name:'🏯 หอคอยแห่งพรรษา',icon:'🏯',
+    color:'#FF8C00',
+    guardian:'🔥 ราชาแห่งพรรษา (บอสสุดท้าย!)',
+    desc:'ด่านสุดท้าย! บอสที่ทรงพลังที่สุดรอท้าทาย\nความรู้รอบด้านเรื่องวันสำคัญทั้งหมด',
+    qs:[
+      {
+        q:'วันออกพรรษาตรงกับวันใด?',
+        c:['ขึ้น 15 ค่ำ เดือน 11','แรม 1 ค่ำ เดือน 11','ขึ้น 15 ค่ำ เดือน 8','แรม 15 ค่ำ เดือน 9'],
+        a:0,tip:'วันออกพรรษาตรงกับวันขึ้น 15 ค่ำ เดือน 11 พระสงฆ์ออกจำพรรษาได้แล้ว'
+      },
+      {
+        q:'ประเพณี "ตักบาตรเทโว" จัดขึ้นเนื่องในโอกาสใด?',
+        c:['วันเข้าพรรษา','วันวิสาขบูชา','วันออกพรรษา','วันมาฆบูชา'],
+        a:2,tip:'ตักบาตรเทโวจัดในวันออกพรรษา เพื่อรับเสด็จพระพุทธเจ้าเสด็จลงจากสวรรค์ชั้นดาวดึงส์'
+      },
+      {
+        q:'วันอัฏฐมีบูชาตรงกับวันใด?',
+        c:['แรม 8 ค่ำ เดือน 6 (8 วันหลังวันวิสาขบูชา)','แรม 8 ค่ำ เดือน 3 (หลังมาฆบูชา)','แรม 8 ค่ำ เดือน 8 (หลังอาสาฬหบูชา)','ขึ้น 8 ค่ำ เดือน 11'],
+        a:0,tip:'วันอัฏฐมีบูชาตรงกับวันแรม 8 ค่ำ เดือน 6 ซึ่งเป็น 8 วันหลังวันวิสาขบูชา'
+      }
+    ]
+  }
+];
+
+// ════════════════════════════════════
+//  STATE
+// ════════════════════════════════════
+let G={
+  name:'ผู้เล่น', av:'🧑‍🎓',
+  hp:3, score:0,
+  stageIdx:0, qIdx:0,
+  done:[], combo:0, maxCombo:0,
+  totalCorrect:0,
+  stageScore:0, stageCorrect:0,
+  timer:null, timeLeft:15, answered:false
+};
+
+// ════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function hearts(n){return'❤️'.repeat(n)+'🖤'.repeat(3-n);}
+
+function updateHUDs(){
+  const h=hearts(G.hp), sc='⭐ '+G.score.toLocaleString();
+  ['m-hearts','q-hearts'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=h;});
+  ['m-score','q-score'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=sc;});
+}
+
+// ════════════════════════════════════
+//  WELCOME
+// ════════════════════════════════════
+function selAv(el){
+  document.querySelectorAll('.av').forEach(a=>a.classList.remove('sel'));
+  el.classList.add('sel');
+  G.av=el.dataset.av;
+}
+
+function startGame(){
+  const n=document.getElementById('name-inp').value.trim();
+  G.name=n||'ธรรมนักรบ';
+  G.hp=3;G.score=0;G.done=[];G.combo=0;G.maxCombo=0;G.totalCorrect=0;
+  showMap();
+}
+
+function restartGame(){
+  clearParts();
+  show('screen-welcome');
+}
+
+// ════════════════════════════════════
+//  MAP
+// ════════════════════════════════════
+function showMap(){
+  updateHUDs();
+  document.getElementById('m-name').textContent=G.av+' '+G.name;
+  const grid=document.getElementById('map-grid');
+  grid.innerHTML='';
+  STAGES.forEach((s,i)=>{
+    const done=G.done.includes(s.id);
+    const avail=i===0||G.done.includes(STAGES[i-1].id);
+    const card=document.createElement('div');
+    card.className='stage-card '+(done?'done':avail?'avail':'locked');
+    if(avail&&!done){
+      card.style.borderColor=s.color;
+      card.style.setProperty('--gc',s.color);
+      card.onclick=()=>enterStage(i);
+    }
+    card.innerHTML=`
+      <span class="sc-icon">${done?'✅':s.icon}</span>
+      <div class="sc-name" style="color:${done?'#00C853':avail?s.color:'#555'}">${s.shortName}</div>
+      <div class="sc-status" style="color:${done?'#00C853':avail?s.color:'#444'}">${done?'✔ ผ่านแล้ว':avail?'▶ กดเพื่อเล่น':'🔒 ล็อกอยู่'}</div>
+      ${!avail?'<div class="lock-mask">🔒</div>':''}
+    `;
+    grid.appendChild(card);
+  });
+  show('screen-map');
+}
+
+// ════════════════════════════════════
+//  STAGE INTRO
+// ════════════════════════════════════
+function enterStage(i){
+  G.stageIdx=i;G.qIdx=0;G.stageScore=0;G.stageCorrect=0;
+  const s=STAGES[i];
+  document.getElementById('i-icon').textContent=s.icon;
+  document.getElementById('i-name').textContent=s.name;
+  document.getElementById('i-desc').textContent=s.desc;
+  document.getElementById('i-guard').textContent=s.guardian;
+  document.getElementById('i-qn').textContent=s.qs.length;
+  const fb=document.getElementById('btn-fight');
+  fb.style.background=`linear-gradient(135deg,${s.color},#FF6D00)`;
+  show('screen-intro');
+}
+
+function beginStage(){showQ();}
+
+// ════════════════════════════════════
+//  QUESTION
+// ════════════════════════════════════
+function showQ(){
+  G.answered=false;
+  const s=STAGES[G.stageIdx], q=s.qs[G.qIdx], tot=s.qs.length;
+  document.getElementById('q-sname').textContent=s.name;
+  updateHUDs();
+  document.getElementById('prog-fill').style.width=(G.qIdx/tot*100)+'%';
+  document.getElementById('q-num').textContent=`คำถามที่ ${G.qIdx+1} / ${tot}`;
+  document.getElementById('q-text').textContent=q.q;
+
+  const box=document.getElementById('choices');
+  box.innerHTML='';
+  ['ก','ข','ค','ง'].forEach((ltr,i)=>{
+    const b=document.createElement('button');
+    b.className='choice';
+    b.innerHTML=`<span class="c-letter">${ltr}</span>${q.c[i]}`;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+  show('screen-question');
+  startTimer();
+}
+
+// ════════════════════════════════════
+//  TIMER
+// ════════════════════════════════════
+function startTimer(){
+  G.timeLeft=15;
+  clearInterval(G.timer);
+  tickTimer();
+  G.timer=setInterval(()=>{
+    G.timeLeft--;
+    tickTimer();
+    if(G.timeLeft<=0){clearInterval(G.timer);if(!G.answered)timeout();}
+  },1000);
+}
+
+function tickTimer(){
+  const pct=G.timeLeft/15*100;
+  const el=document.getElementById('timer-fill');
+  el.style.width=pct+'%';
+  el.className='timer-fill'+(G.timeLeft<=4?' danger':G.timeLeft<=8?' warn':'');
+}
+
+function timeout(){
+  G.answered=true;
+  const q=STAGES[G.stageIdx].qs[G.qIdx];
+  document.querySelectorAll('.choice')[q.a].classList.add('correct');
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  G.combo=0;
+  hitHp();
+  feedback(false,'⏰ หมดเวลา!',q.tip,0);
+}
+
+// ════════════════════════════════════
+//  PICK ANSWER
+// ════════════════════════════════════
+function pick(i,btn){
+  if(G.answered)return;
+  G.answered=true;
+  clearInterval(G.timer);
+  const q=STAGES[G.stageIdx].qs[G.qIdx];
+  const btns=document.querySelectorAll('.choice');
+  btns.forEach(b=>b.disabled=true);
+
+  if(i===q.a){
+    btn.classList.add('correct');
+    const tBonus=Math.floor(G.timeLeft*6);
+    G.combo++;
+    if(G.combo>G.maxCombo)G.maxCombo=G.combo;
+    const cBonus=G.combo>1?(G.combo-1)*25:0;
+    const pts=100+tBonus+cBonus;
+    G.score+=pts;G.stageScore+=pts;G.stageCorrect++;G.totalCorrect++;
+    updateHUDs();
+    if(G.combo>1)showCombo(G.combo);
+    feedback(true,'✅ ถูกต้อง!',q.tip,pts);
+  }else{
+    btn.classList.add('wrong');
+    btns[q.a].classList.add('correct');
+    G.combo=0;
+    hitHp();
+    feedback(false,'❌ ผิด!',q.tip,0);
+  }
+}
+
+function hitHp(){
+  G.hp--;
+  updateHUDs();
+  document.getElementById('screen-question').style.animation='shake .35s ease';
+  setTimeout(()=>{document.getElementById('screen-question').style.animation='';},400);
+}
+
+// ════════════════════════════════════
+//  FEEDBACK
+// ════════════════════════════════════
+function feedback(ok,title,detail,pts){
+  const ov=document.getElementById('fb-overlay');
+  ov.className='fb-overlay show '+(ok?'fb-ok':'fb-bad');
+  document.getElementById('fb-icon').textContent=ok?'✅':'❌';
+  document.getElementById('fb-title').textContent=title;
+  document.getElementById('fb-detail').textContent=detail;
+  document.getElementById('fb-pts').textContent=ok?'+'+pts+' แต้ม!':'';
+  setTimeout(()=>{ov.classList.remove('show');afterFb();},1900);
+}
+
+function afterFb(){
+  if(G.hp<=0){gameOver();return;}
+  const s=STAGES[G.stageIdx];
+  G.qIdx++;
+  if(G.qIdx>=s.qs.length)stageDone();
+  else showQ();
+}
+
+// ════════════════════════════════════
+//  COMBO BADGE
+// ════════════════════════════════════
+function showCombo(n){
+  const b=document.createElement('div');
+  b.className='combo-badge';
+  b.textContent='🔥 COMBO x'+n+'!';
+  document.body.appendChild(b);
+  setTimeout(()=>b.remove(),1400);
+}
+
+// ════════════════════════════════════
+//  STAGE DONE
+// ════════════════════════════════════
+function stageDone(){
+  const s=STAGES[G.stageIdx];
+  G.done.push(s.id);
+  const pct=G.stageCorrect/s.qs.length;
+  const stars=pct>=1?'⭐⭐⭐':pct>=.67?'⭐⭐':'⭐';
+  document.getElementById('done-icon').textContent=s.icon;
+  document.getElementById('done-stars').textContent=stars;
+  document.getElementById('ds-correct').textContent=G.stageCorrect+'/'+s.qs.length;
+  document.getElementById('ds-gained').textContent='+'+G.stageScore.toLocaleString();
+  document.getElementById('ds-total').textContent=G.score.toLocaleString();
+  const nb=document.getElementById('btn-next');
+  const isLast=G.stageIdx>=STAGES.length-1;
+  nb.textContent=isLast?'🏆 ดูผลสรุป!':'ด่านถัดไป →';
+  nb.onclick=isLast?victory:goNext;
+  spawnParts();
+  show('screen-done');
+}
+
+function goNext(){
+  clearParts();
+  if(G.stageIdx<STAGES.length-1)enterStage(G.stageIdx+1);
+  else victory();
+}
+
+// ════════════════════════════════════
+//  GAME OVER
+// ════════════════════════════════════
+function gameOver(){
+  document.getElementById('go-score').textContent=G.score.toLocaleString();
+  document.getElementById('go-stage').textContent='ด่าน '+(G.stageIdx+1);
+  show('screen-over');
+}
+
+// ════════════════════════════════════
+//  VICTORY
+// ════════════════════════════════════
+function victory(){
+  clearParts();
+  const total=STAGES.reduce((s,st)=>s+st.qs.length,0);
+  const pct=G.totalCorrect/total;
+  let rank,msg,rc;
+  if(pct>=1&&G.hp===3){rank='S';rc='#FFD700';msg=`${G.av} ${G.name} คือ ธรรมนักรบที่สมบูรณ์แบบ! ตอบถูกทุกข้อโดยไม่เสียชีวิตเลยสักครั้ง! 🌟`;}
+  else if(pct>=.9){rank='A';rc='#FF8C00';msg=`${G.av} ${G.name} ยอดเยี่ยมมากเลย! มีความรู้เรื่องวันสำคัญในพุทธศาสนาอย่างลึกซึ้ง 🏆`;}
+  else if(pct>=.75){rank='B';rc='#00C853';msg=`${G.av} ${G.name} ทำได้ดีมาก! ลองทบทวนข้อที่ตอบผิดแล้วจะยิ่งเก่งขึ้น 📚`;}
+  else if(pct>=.5){rank='C';rc='#1A73E8';msg=`${G.av} ${G.name} พยายามดีแล้ว! กลับไปทบทวนเนื้อหาแล้วลองใหม่นะ 💪`;}
+  else{rank='D';rc='#9B27AF';msg=`${G.av} ${G.name} ไม่เป็นไรเลย! ทบทวนเนื้อหาแล้วลองเล่นใหม่ได้เลย 📖`;}
+
+  document.getElementById('v-player').textContent='ยินดีด้วย '+G.av+' '+G.name+'!';
+  document.getElementById('rank-ltr').textContent=rank;
+  document.getElementById('rank-ring').style.background=rc;
+  document.getElementById('v-score').textContent=G.score.toLocaleString();
+  document.getElementById('v-correct').textContent=G.totalCorrect+'/'+total;
+  document.getElementById('v-hp').textContent=hearts(G.hp);
+  document.getElementById('v-combo').textContent=G.maxCombo+'x';
+  document.getElementById('v-msg').textContent=msg;
+  spawnParts();spawnParts();
+  show('screen-victory');
+}
+
+// ════════════════════════════════════
+//  PARTICLES
+// ════════════════════════════════════
+const EMOJIS=['🌸','⭐','🌟','✨','💫','🏆','🎉','🪷','🌕','🎊','🔥','💎'];
+function spawnParts(){
+  for(let i=0;i<18;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');
+      p.className='particle';
+      p.textContent=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+      p.style.left=Math.random()*100+'vw';
+      p.style.animationDuration=(2+Math.random()*3)+'s';
+      p.style.animationDelay=Math.random()*0.5+'s';
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),5500);
+    },i*90);
+  }
+}
+function clearParts(){document.querySelectorAll('.particle').forEach(p=>p.remove());}
+</script>
+</body>
+</html>
